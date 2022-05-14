@@ -1,50 +1,71 @@
+import dayjs from 'dayjs'
+
 export default () => ({
-	help: 'Checkin and get some coins',
-	args: [ { ty: '$uid' } ],
-	fn: async (uid) => {
-		// Note: 首先判断一天只能调用一次
-		const property = await bot.mongo.db
-			.collection('property')
-			.findOne({ uid: uid })
-		let coins
+    help: '签到并获得一些金币',
+    args: [ { ty: '$uid' } ],
+    fn: async (uid) => {
+        // Note: 首先判断一天只能调用一次
+        const property = await bot.mongo.db
+            .collection('property')
+            .findOne({ _id: uid })
 
-		// Note: 不在数据库里的先创建
-		if(! property) {
-			await bot.mongo.db
-				.collection('property')
-				.insertOne({
-					uid: uid,
-					lastCheckin: (new Date()).valueOf(),
-					coin: 0
-				})
-			coins = 0
-		}
-		else {
-			const lastCheckin = new Date(property.lastCheckin),
-				now = new Date()
+        // Note: 不在数据库里的先创建
+        if(! property) {
+            await bot.mongo.db
+                .collection('property')
+                .insertOne({
+                    _id: uid,
+                    lastCheckin: new Date
+                })
+        }
+        else {
+            const lastCheckin = property.lastCheckin,
+                now = new Date
 
-			// Note: 如果同一天已经签到过了
-			if (lastCheckin.getFullYear() === now.getFullYear() ||
-                lastCheckin.getMonth() === now.getMonth() ||
-                lastCheckin.getDate() === now.getDate()) {
-				return '您今天已经签到过了呢'
-			}
+            // Note: 如果同一天已经签到过了
+            if (dayjs(lastCheckin).isSame(now, 'day')) return '您今天已经签到过了呢'
 
-			coins = property.coins
-		}
+            await bot.mongo.db
+                .collection('property')
+                .updateOne({
+                    _id: uid
+                }, {
+                    $set: {
+                        lastCheckin: new Date
+                    }
+                })
+        }
 
-		// Note: 打钱
-		const newCoins = (Math.random() * 1e6 | 0) % 101
-		await bot.mongo.db
-			.collection('property')
-			.updateOne({
-				uid: uid
-			}, {
-				$set: {
-					'coin': coins+newCoins
-				}
-			})
+        // Note: 打钱
+        const active = await bot.mongo.db
+            .collection('bank')
+            .findOne({ _id: uid })
+
+        if (! active) return '请先创建银行账户'
+
+        const newCoins = (Math.random() * 1e6 | 0) % 101
+        await bot.mongo.db
+            .collection('card')
+            .updateOne({
+                _id: uid,
+                name: active.active
+            }, {
+                $inc: {
+                    coin: newCoins
+                }
+            })
+        /*
+        await bot.mongo.db
+            .collection('property')
+            .updateOne({
+                _id: uid
+            }, {
+                $inc: {
+                    coin: newCoins
+                }
+            })
+        */
         
-		return `获得了 ${newCoins} 个硬币`
-	}
+        return `获得了 ${newCoins} 个硬币`
+    }
 })

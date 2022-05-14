@@ -3,11 +3,12 @@
     "version": "0.1.0",
     "repository": "git@github.com:YuzhenQin/willbot-plugin-property.git",
     "author": "YuzhenQin <1@jin-dan.site>",
-    "license": "GPL v3",
+    "license": "GPL-3.0",
     "type": "module",
     "dependencies": {
       "@babel/core": "^7.17.10",
-      "@babel/plugin-syntax-import-assertions": "^7.16.7"
+      "@babel/plugin-syntax-import-assertions": "^7.16.7",
+      "dayjs": "^1.11.2"
     },
     "devDependencies": {
       "@babel/eslint-parser": "^7.17.0",
