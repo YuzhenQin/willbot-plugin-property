@@ -70,6 +70,8 @@ export default () => ({
                         lend: 0,
                         coin: 0
                     })
+
+                return `成功创建账户 ${name}`
             }
         },
         select: {
@@ -97,6 +99,8 @@ export default () => ({
                             active: name
                         }
                     })
+
+                return `已经将 ${name} 设置为活动账户`
             }
         }
     }
