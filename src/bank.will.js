@@ -98,6 +98,8 @@ export default () => ({
                         $set: {
                             active: name
                         }
+                    }, {
+                        upsert: true
                     })
 
                 return `已经将 ${name} 设置为活动账户`
