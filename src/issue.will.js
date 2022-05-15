@@ -1,4 +1,4 @@
-import { superusers, issue } from './property-util'
+import { superusers, issue } from './property-util.js'
 
 export default () => ({
     help: '发行新的金币，需要超级用户权限',

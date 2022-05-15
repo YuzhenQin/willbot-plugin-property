@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { issue } from './property-util'
+import { issue } from './property-util.js'
 
 export default () => ({
     help: '签到并获得一些金币',
